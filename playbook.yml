@@ -1,0 +1,125 @@
+- hosts: all
+  become: yes
+  gather_facts: false
+  tasks:
+  - name: Install docker packages
+    remote_user: ubuntu
+    apt:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    tags:
+      - docker
+  - name: Add Docker s official GPG key
+    remote_user: ubuntu
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+    tags:
+      - docker
+  - name: Verify that we have the key with the fingerprint
+    remote_user: ubuntu
+    apt_key:
+      id: 0EBFCD88
+      state: present
+    tags:
+      - docker
+  - name: Set up the stable repository
+    remote_user: ubuntu
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+      update_cache: yes
+    tags:
+      - docker
+  - name: Update apt packages
+    remote_user: ubuntu
+    apt:
+      update_cache: yes
+    tags:
+      - docker
+  - name: Install docker
+    remote_user: ubuntu
+    apt:
+      name: docker-ce
+      state: present
+      update_cache: yes
+    #notify: Start docker on boot
+    tags:
+      - docker
+  - name: Add remote "ubuntu" user to "docker" group
+    remote_user: ubuntu
+    user:
+      name: "ubuntu"
+      group: "docker"
+      append: yes
+    tags:
+      - docker
+  - name: Install docker-compose
+    remote_user: ubuntu
+    get_url:
+      url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+      dest: /usr/local/bin/docker-compose
+      mode: 'u+x,g+x'
+
+#  - name: Copy files
+#    synchronize:
+#     src: '/home/ubuntu/compose'
+#     dest: '/etc/opt/'
+
+#  - name: Run containers
+#    become: True
+#    shell:
+#      cmd: "docker-compose up -d"
+#      chdir: /etc/opt/compose
+
+  - name: Update repositories cache and install "unzip" package
+    apt:
+      name: unzip
+      update_cache: yes
+
+  - name: Downloading AWS
+    shell: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+  - name: Unzip aws cli
+    shell: "unzip awscliv2.zip"
+
+  - name: Installing aws cli
+    shell: "sudo ./aws/install"
+
+  - name: AWS acces key configure
+    shell: aws configure set aws_access_key_id AKIAZ65ROZW2O7ZSMWFN
+
+  - name: AWS secret key configure
+    shell: aws configure set aws_secret_access_key dKCsoJIQrjIHWnztjy1YZ1/++ViK43GptOAf7d1O
+
+  - name: AWS region configure
+    shell: aws configure set default.region eu-central-1
+
+  - name: Login to ECR
+    shell: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w9v8a6d5
+
+  - name: Pulling APACHE image from ECR
+    shell: docker pull public.ecr.aws/w9v8a6d5/apache:latest
+
+  - name: Pulling NGINX image from ECR
+    shell: docker pull public.ecr.aws/w9v8a6d5/nginx:latest
+
+  - name: Start apache container
+    community.docker.docker_container:
+      name: apache
+      image: public.ecr.aws/w9v8a6d5/apache:latest
+      ports:
+       - "8080:80"
+
+  - name: Start nginx container
+    community.docker.docker_container:
+      name: nginx
+      image: public.ecr.aws/w9v8a6d5/nginx:latest
+      ports:
+       - "80:80"
