@@ -78,6 +78,11 @@
 #      cmd: "docker-compose up -d"
 #      chdir: /etc/opt/compose
 
+  - name: Installing python-docker
+    apt:
+      name: python-docker
+      update_cache: yes
+
   - name: Update repositories cache and install "unzip" package
     apt:
       name: unzip
