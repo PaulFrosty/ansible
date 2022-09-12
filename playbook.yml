@@ -80,7 +80,7 @@
 
   - name: Installing python-docker
     apt:
-      name: python-docker
+      name: python3-docker
       update_cache: yes
 
   - name: Update repositories cache and install "unzip" package
