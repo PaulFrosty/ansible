@@ -5,4 +5,4 @@ PROD2 ansible_host=54.93.205.247
 
 [prod_servers:vars]
 ansible_user=ubuntu
-ansible_ssh_private_key_file=/home/ubuntu/.ssh/Frankfurt-playsdev.pem
+#ansible_ssh_private_key_file=/home/ubuntu/.ssh/Frankfurt-playsdev.pem
