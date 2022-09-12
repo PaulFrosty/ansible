@@ -111,14 +111,14 @@
     shell: docker pull public.ecr.aws/w9v8a6d5/nginx:latest
 
   - name: Start apache container
-    community.docker.docker_container:
+    docker_container:
       name: apache
       image: public.ecr.aws/w9v8a6d5/apache:latest
       ports:
        - "8080:80"
 
   - name: Start nginx container
-    community.docker.docker_container:
+    docker_container:
       name: nginx
       image: public.ecr.aws/w9v8a6d5/nginx:latest
       ports:
