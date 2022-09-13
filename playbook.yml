@@ -107,10 +107,10 @@
 #    shell: aws configure set default.region eu-central-1
 
   - name: Deleting images
-    shell: docker rmi -f $(docker images -q)
+    shell: docker rmi  $(docker images -q)
 
   - name: Deleting containers
-    shell: docker rm -f $(docker ps -aq)
+    shell: docker rm -f  $(docker ps -aq)
 
   - name: Login to ECR
     shell: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w9v8a6d5
