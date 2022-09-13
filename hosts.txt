@@ -1,7 +1,7 @@
 [prod_servers]
-PROD1 ansible_host=3.67.71.230
+PROD1 ansible_host=3.67.83.99
 
-PROD2 ansible_host=54.93.205.247
+PROD2 ansible_host=3.64.228.153
 
 [prod_servers:vars]
 ansible_user=ubuntu
